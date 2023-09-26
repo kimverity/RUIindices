@@ -1,0 +1,13 @@
+Package: RUIindices
+Version: 0.1
+Date: 2023-09-20
+Title: Robust Universal Interpretable indices
+Description: Calculates all RUI indices.
+Author: Kimberley Verity <kim.verity@city.ac.uk>
+Maintainer: Kimberley Verity <kim.verity@city.ac.uk>
+Imports: ape,
+         TreeTools,
+         fpCompare
+Encoding: UTF-8
+License: MIT + file LICENCE
+RoxygenNote: 7.2.3
