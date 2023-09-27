@@ -10,7 +10,7 @@ Node abundances must be inputted as a dataframe with two columns. The first colu
 
 If the given tree does not have branch lengths then they will be assigned to be equal with a length of 1.
 
-To calculate all indices call `all_indices()`. To calculate either all node mean indices or a single once, call `node()`. To calculate all longitudinal mean indices, or all star mean indices, or a single of either, call `long_star()`. The default for the latter two fuctions is to calculate all indices, to calculate one the desired index must be specified.
+To calculate all indices call `all_indices()`. To calculate either all node mean indices or a single one, call `node()`. To calculate all longitudinal mean indices, or all star mean indices, or a single of either, call `long_star()`. The default for the latter two fuctions is to calculate all indices, to calculate one the desired index must be specified.
 
 Examples:
 ```
