@@ -27,6 +27,8 @@ compute_T_i_S_i <- function(tree, node, abundances) {
   # Sum abundances of all branches in df_descen_info, delete the branch/es 
   # corresponding with shortest branch length, repeat until all branches
   # have been summed over (i.e. deleted from dataframe)
+  Length <- length(unique(df_descen_info[,"Branch_lengths"])) # Preassign length
+  df_list <- vector(mode = "list", length = Length) # List for dataframes
   T_i <- 0 # Initialise T_i sum
   prev_x <- 0 # Keep track of previous value of x
   # Sum over each unique branch length
@@ -44,9 +46,8 @@ compute_T_i_S_i <- function(tree, node, abundances) {
     # Record all info and delete any branches "passed"
     if (nrow(df_descen_info) != 0){ # If there are branches left
       # Append abundance and corresponding value of x
-      DF_S_i <- rbind(DF_S_i, 
-                      data.frame("S_i" = abundance_sum,
-                                 "x" = min(df_descen_info["Branch_lengths"])))
+      df_list[j] <- list(data.frame("S_i" = abundance_sum,
+                                    "x" = min(df_descen_info["Branch_lengths"])))
       
       T_i <- T_i + (abundance_sum * (min(df_descen_info["Branch_lengths"]) - prev_x)) # Sum T_i
       prev_x <- min(df_descen_info["Branch_lengths"]) # Update previous x
@@ -54,6 +55,7 @@ compute_T_i_S_i <- function(tree, node, abundances) {
       df_descen_info <- df_descen_info[-(which(df_descen_info["Branch_lengths"] == min(df_descen_info["Branch_lengths"]))),] # Remove branch/s corresponding to x value
     }
   }
-  
+  # Combine dataframes
+  DF_S_i <- Reduce(rbind, df_list)
   return(list(T_i, DF_S_i))
 }
