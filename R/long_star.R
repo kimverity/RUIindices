@@ -95,12 +95,12 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
         }else if (length(abund_vec) == 1) {# Only one branch in region
           h <- h + (1 * S * x)
         }
-      }
-      # For index letter "D", need to check which index is wanted i.e. what q
-      if (q == 1) {
-        h <- h + (sum(-(abund_vec) * log((abund_vec / S))) * x)
-      }else if (q == 0) {
-        h <- h + (S * x * log(length(abund_vec), base = exp(1)))
+      }else { # For index letter "D"
+        if (q == 1) { # Check q value
+          h <- h + (sum(-(abund_vec) * log((abund_vec / S))) * x)
+        }else if (q == 0) {
+          h <- h + (S * x * log(length(abund_vec), base = exp(1)))
+        }
       }
     }else if (individual == FALSE) { # All indices
       h1 <- h1 + (sum(-(abund_vec) * log((abund_vec / S))) * x)
