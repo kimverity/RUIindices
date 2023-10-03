@@ -70,8 +70,8 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
         abundance_sum <- sum(abund_list[[as.character(j)]]) # Sum abundances
         
         # Append dataframe to list
-        df_list <- append(df_list, data.frame("S_i" = abundance_sum,
-                                              "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x)))
+        df_list <- append(df_list, list(data.frame("S_i" = abundance_sum,
+                                                   "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x))))
         
         prev_x <- min(df_node_info_ed[index_curr_branches,]["x"]) # Update previous x
         x <- x + prev_x # Update x
