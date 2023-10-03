@@ -34,9 +34,7 @@
 #' 
 #' @export
 calculate_DJ_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i, 
-                             index_letter, q, individual){
-  
-  term <- function(a,b,log_base){-(a/b) * log(a/b, base = log_base)}
+                             index_letter, q, individual) {
   
   index_letter <- toupper(index_letter) # Capitalise input
   
@@ -44,14 +42,8 @@ calculate_DJ_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i,
   df_S_i_a <- S_i_a_res[[1]] # Select dataframe
   abund_list <- S_i_a_res[[2]] # Select abundance list
   
-  # Create empty dataframe/s
-  if (individual == FALSE){
-    df_1D_i_a <- data.frame("1D_i_a" = numeric(), "x" = numeric()) 
-    df_1J_i_a <- data.frame("1J_i_a" = numeric(), "x" = numeric())
-    df_0D_i_a <- data.frame("0D_i_a" = numeric(), "x" = numeric())
-  }else if (individual == TRUE){
-    df_In_i_a <- data.frame("In_i_a" = numeric(), "x" = numeric()) 
-  }
+  # Create empty list for dataframes
+  df_In_i_a_list <- vector(mode = "list", length = length(df_S_i_a$x))
   
   # Sum over every region of x
   for (k in 1:length(abund_list)){
@@ -61,38 +53,42 @@ calculate_DJ_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i,
     
     if (individual == FALSE){ # Calculating all indices
       D0 <- log(length(abund_vec))
-      D1 <- sum(sapply(abund_vec, term, b = S, log_base=exp(1)))
+      D1 <- sum(-(abund_vec / S) * log((abund_vec / S)))
       # J is defined to be 1 when only one branch is present
-      if (length(abund_vec) > 1 ){ # There is more than one branch in region
-        J1 <- sum(sapply(abund_vec, term, b = S, log_base=length(abund_vec)))
-      }else if (length(abund_vec) == 1){ # There is one branch in region
+      if (length(abund_vec) > 1 ) { # There is more than one branch in region
+        J1 <- sum(-(abund_vec / S) * log((abund_vec / S), base=length(abund_vec)))
+      }else if (length(abund_vec) == 1) { # There is one branch in region
         J1 <- 1
       }
       # Store values and corresponding x
-      df_0D_i_a <- rbind(df_0D_i_a, data.frame("M_i_a" = D0, "x" = df_S_i_a[k, "x"]))
-      df_1D_i_a <- rbind(df_1D_i_a, data.frame("E_i_a" = D1, "x" = df_S_i_a[k, "x"]))
-      df_1J_i_a <- rbind(df_1J_i_a, data.frame("J_i_a" = J1, "x" = df_S_i_a[k, "x"]))
+      df_In_i_a_list[k] <- list(data.frame("D0" = D0, "D1" = D1, "J1" = J1,
+                                           "x" = df_S_i_a[k, "x"]))
     }else if (individual == TRUE){ # Calculating one index
       # Checks desired index and calculates value
-      if ((index_letter == "D")&(q == 0)){
+      if ((index_letter == "D")&(q == 0)) {
         ind_val <- log(length(abund_vec))
-      }else if ((index_letter == "D")&(q == 1)){
-        ind_val <- sum(sapply(abund_vec, term, b = S, log_base=exp(1)))
-      }else if (index_letter == "J"){
-        if (length(abund_vec) > 1 ){ # There is more than one branch in region
-          ind_val <- sum(sapply(abund_vec, term, b = S, log_base=length(abund_vec))) # Calculate balance term
-        }else if (length(abund_vec) == 1){ # There is one branch in region
+      }else if ((index_letter == "D")&(q == 1)) {
+        ind_val <- sum(-(abund_vec / S) * log((abund_vec / S)))
+      }else if (index_letter == "J") {
+        if (length(abund_vec) > 1 ) { # There is more than one branch in region
+          ind_val <- sum(-(abund_vec / S) * log((abund_vec / S), base=length(abund_vec)))
+        }else if (length(abund_vec) == 1) { # There is one branch in region
           ind_val <- 1
         }
       }
       # Store value and corresponding x
-      df_In_i_a <- rbind(df_In_i_a, data.frame("In_i_a" = ind_val, "x" = df_S_i_a[k, "x"]))
+      df_In_i_a_list[k] <- list(data.frame("In_i_a" = ind_val, "x" = df_S_i_a[k, "x"]))
     }
   }
   # Return either a dictionary of index values or single index
-  if (individual == FALSE){
-    return(list("1DN" = df_1D_i_a, "1JN" = df_1J_i_a, "0DN" = df_0D_i_a))
+  if (individual == FALSE) {
+    # Combine dataframes
+    df_In_i_a <- Reduce(rbind, df_In_i_a_list)
+    return(list("1DN" = df_In_i_a[,c("D1", "x")], "1JN" = df_In_i_a[,c("J1", "x")],
+                "0DN" = df_In_i_a[,c("D0", "x")]))
   }else if (individual == TRUE){
+    # Combine dataframes
+    df_In_i_a <- Reduce(rbind, df_In_i_a_list)
     return(df_In_i_a)
   }
 }
