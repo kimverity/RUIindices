@@ -25,8 +25,6 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
   
   abundances <- abundance_phylo(tree, abundance_data) # Node/branch abundances
   
-  node_labels <- append(tree$tip.label, tree$node.label) # All node labels
-  
   df_node_info <- get_descendant_branches(tree, node) # Get descendant branches from ancestor
   # Set all x to be equal to branch length, i.e. all branches are attached to
   # root node
@@ -36,10 +34,13 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
   # Sum abundances of all branches in df_node_info_ed, delete the branch/es 
   # corresponding with shortest branch length/x, repeat until all branches
   # have been summed over (i.e. deleted from dataframe)
-  DF_S_i <- data.frame("S_i" = numeric(), "x" = numeric()) # Empty dataframe
-  abund_list <- list() # Empty dictionary for abundances
+  Length <- length(unique(df_node_info$x)) # Preassign length
+  df_list <- vector(mode = "list", length = Length) # List for dataframes
+  abund_list <- vector(mode = "list", length = Length) # Empty dictionary for abundances
+  names(abund_list) <- as.character(c(1:Length)) # Change names to characters
+  df_list <- list()
   # Sum over each unique branch length
-  for (j in 1:length(unique(df_node_info$x))) {
+  for (j in 1:Length) {
     if (nrow(df_node_info_ed) != 0){ # Checks if any branches are left
       end_nodes <- df_node_info_ed$End_node # End nodes of current branches
       # Store all branch abundances present for this value of x
@@ -48,12 +49,13 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
       abundance_sum <- sum(abund_list[[as.character(j)]]) # Sum abundances 
       
       # Append abundance and corresponding value of x
-      DF_S_i <- rbind(DF_S_i, data.frame("S_i" = abundance_sum,
-                                         "x" = (min(df_node_info_ed$x))))
+      df_list[j] <- list(data.frame("S_i" = abundance_sum,
+                                    "x" = (min(df_node_info_ed$x))))
       # Remove branch/s corresponding to x value
       df_node_info_ed <- df_node_info_ed[-(which(df_node_info_ed$x == min(df_node_info_ed$x))),]
     }
   }
-  
+  # Combine dataframes
+  DF_S_i <- Reduce(rbind, df_list)
   return(list(DF_S_i, abund_list))
 }
