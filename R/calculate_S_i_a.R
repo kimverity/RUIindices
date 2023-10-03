@@ -51,7 +51,7 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
   # branch/es corresponding with smallest branch length/x, then transform
   # all x and branch lengths by - length of previous region 
   # i.e. shifting then to be measured from the started of new region
-  DF_S_i <- data.frame("S_i" = numeric(), "x" = numeric()) # Empty dataframe
+  df_list <- list() # List for dataframes
   abund_list <- list() # Empty dictionary for abundances
   x <- 0 # Keep track of distance from node
   # Sum over each branch as all could have different branch lengths
@@ -69,9 +69,9 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
         
         abundance_sum <- sum(abund_list[[as.character(j)]]) # Sum abundances
         
-        # Append abundance and corresponding value of x
-        DF_S_i <- rbind(DF_S_i, data.frame("S_i" = abundance_sum,
-                                           "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x)))
+        # Append dataframe to list
+        df_list <- append(df_list, data.frame("S_i" = abundance_sum,
+                                              "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x)))
         
         prev_x <- min(df_node_info_ed[index_curr_branches,]["x"]) # Update previous x
         x <- x + prev_x # Update x
@@ -87,6 +87,7 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
       }
     }
   }
-  
+  # Combine dataframes
+  DF_S_i <- Reduce(rbind, df_list)
   return(list(DF_S_i, abund_list))
 }
