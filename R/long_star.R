@@ -33,8 +33,6 @@
 long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "D", q = 1,
                       individual = FALSE){
   
-  term <- function(a,b,log_base){-a * log(a/b, base = log_base)}
-  
   index_letter <- toupper(index_letter) # Capitalise input
   mean_type <- toupper(mean_type) # Capitalise input
   
@@ -45,14 +43,14 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   # If it does it calculates branch/node abundance data.
   # If it doesn't, it assign leaves to be equally abundant and internal nodes 
   # to have size zero
-  if (is.data.frame(node_abundances)){ # Tree has abundance data
+  if (is.data.frame(node_abundances)) { # Tree has abundance data
     abundances <- abundance_phylo(tree, node_abundances) # Calculate branch/node abundances
-  }else if (!(is.data.frame(node_abundances))){ # Tree doesn't have abundance data
+  }else if (!(is.data.frame(node_abundances))) { # Tree doesn't have abundance data
     num_tips <- tree$edge[1,1] - 1 # Number of tips
     tree$node.label<- as.character(c(1:num_tips)) # Assign node labels
     num_nodes <- tree$Nnode # Number of nodes
     # Assign node labels
-    tree$node.label<- as.character(c((num_tips+1):(num_tips + num_nodes)))
+    tree$node.label <- as.character(c((num_tips + 1):(num_tips + num_nodes)))
     
     # Create abundance dataframe
     node_abundances <- data.frame("names" = c(tree$node.label, tree$tip.label),
@@ -61,9 +59,9 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   }
   
   # Selects mean type and runs corresponding function for S_i_a
-  if (mean_type == "LONGITUDINAL"){
+  if (mean_type == "LONGITUDINAL") {
     S_i_a_res <- calculate_S_i_a(tree, node, abundances, node, 0, sum(tree$edge.length)) # Run function
-  }else if (mean_type== "STAR"){
+  }else if (mean_type == "STAR") {
     S_i_a_res <- calculate_S_i_a_star(tree, node, node_abundances) # Run function
   }
   
@@ -74,63 +72,63 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   df_S_i_a <- S_i_a_res[[1]] # Select dataframe
   abund_list <- S_i_a_res[[2]] # Select abundance list
   # Initialise sum/s
-  if (individual == TRUE){ # One index
+  if (individual == TRUE) { # One index
     h <- 0
-  }else if (individual == FALSE){# All indices
+  }else if (individual == FALSE) {# All indices
     h1 <- 0
     h0 <- 0
     j1 <- 0
   }
   T_S_sum <- 0 # Initialise sum
   prev_x <- 0 # Keep track of x
-  for (k in 1:length(abund_list)){ # Sum across every region of x 
+  for (k in 1:length(abund_list)) { # Sum across every region of x 
     S <- df_S_i_a[k,"S_i"] # Select S_i_a
     x <- df_S_i_a[k, "x"] - prev_x # Assign interval length
     abund_vec <- unlist(abund_list[k], use.names = FALSE) # Branch abundances present in interval
     T_S_sum <- T_S_sum + (S * x) # H_bar
     #Calculate index values
-    if (individual == TRUE){ # One index
-      if (index_letter == "J"){ # J for q = 1
-        if (length(abund_vec) != 1){ # More than one branch in region
-          h <- h + (sum(sapply(abund_vec, term, b = S, log_base=length(abund_vec))) * x)
-        }else if (length(abund_vec) == 1){# Only one branch in region
+    if (individual == TRUE) { # One index
+      if (index_letter == "J") { # J for q = 1
+        if (length(abund_vec) != 1) { # More than one branch in region
+          h <- h + (sum(-(abund_vec) * log((abund_vec / S),
+                                           base = length(abund_vec))) * x)
+        }else if (length(abund_vec) == 1) {# Only one branch in region
           h <- h + (1 * S * x)
         }
       }
       # For index letter "D", need to check which index is wanted i.e. what q
-      if (q == 1){
-        h <- h + (sum(sapply(abund_vec, term, b = S, log_base=exp(1))) * x)
-      }else if (q == 0){
-        h <- h + (S * x * log(length(abund_vec), base=exp(1)))
+      if (q == 1) {
+        h <- h + (sum(-(abund_vec) * log((abund_vec / S))) * x)
+      }else if (q == 0) {
+        h <- h + (S * x * log(length(abund_vec), base = exp(1)))
       }
-      
-    }else if (individual == FALSE){ # All indices
-      h1 <- h1 + (sum(sapply(abund_vec, term, b = S, log_base=exp(1))) * x)
-      h0 <- h0 + (S * x * log(length(abund_vec), base=exp(1)))
-      if (length(abund_vec) != 1){ # More than one branch in region
-        j1 <- j1 + (sum(sapply(abund_vec, term, b = S, log_base=length(abund_vec))) * x)
-      }else if (length(abund_vec) == 1){ # One branch in region 
+    }else if (individual == FALSE) { # All indices
+      h1 <- h1 + (sum(-(abund_vec) * log((abund_vec / S))) * x)
+      h0 <- h0 + (S * x * log(length(abund_vec), base = exp(1)))
+      if (length(abund_vec) != 1) { # More than one branch in region
+        j1 <- j1 + (sum(-(abund_vec) * log((abund_vec / S),
+                                           base = length(abund_vec))) * x)
+      }else if (length(abund_vec) == 1) { # One branch in region
         j1 <- j1 + (1 * S * x)
       }
     }
-    
-    prev_x <- df_S_i_a[k,"x"] # Update x
+    prev_x <- df_S_i_a[k, "x"] # Update x
   }
-  
   # Normalise index/indices
-  if (individual == TRUE){ # One index
-    if (index_letter == "J"){ # Index is J
-      H <- (h/T_S_sum) 
+  if (individual == TRUE) { # One index
+    if (index_letter == "J") { # Index is J
+      H <- (h / T_S_sum)
     }else{
-      H <- exp((h/T_S_sum)) 
+      H <- exp((h / T_S_sum))
     }
-  }else if (individual == FALSE){ # All indices
-    if (mean_type == "STAR"){ # Star mean indices
-      H <- list("D0S" = exp((h0/T_S_sum)), "D1S" = exp((h1/T_S_sum)), "J1S" = j1/T_S_sum)
-    }else if(mean_type == "LONGITUDINAL"){ # Lomgitudianl mean indices
-      H <- list("D0L" = exp((h0/T_S_sum)), "D1L" = exp((h1/T_S_sum)), "J1L" = j1/T_S_sum)
+  }else if (individual == FALSE) { # All indices
+    if (mean_type == "STAR") { # Star mean indices
+      H <- list("D0S" = exp((h0 / T_S_sum)), "D1S" = exp((h1 / T_S_sum)),
+                "J1S" = j1 / T_S_sum)
+    }else if (mean_type == "LONGITUDINAL") { # Lomgitudianl mean indices
+      H <- list("D0L" = exp((h0 / T_S_sum)), "D1L" = exp((h1 / T_S_sum)),
+                "J1L" = j1 / T_S_sum)
     }
   }
-  
   return(H)
 }
