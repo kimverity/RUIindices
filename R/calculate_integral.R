@@ -49,7 +49,7 @@ calculate_integral <- function(tree, node, curr_ancestor, S_i, abundances, index
   if (curr_ancestor == (length(tree$tip.label) + 1)){ # If ancestor is the root node
     d_parent <- l_i  # By definition its Inf, but integral is only nonzero to l_i
   }else{
-    d_parent <- tree$edge.length[which(tree$edge[,2] == curr_ancestor)]
+    d_parent <- tree$edge.length[which(tree$edge[,2] == curr_ancestor)] + h
   }
   
   # Ancestor integral
