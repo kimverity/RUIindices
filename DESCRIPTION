@@ -7,7 +7,8 @@ Author: Kimberley Verity <kim.verity@city.ac.uk>
 Maintainer: Kimberley Verity <kim.verity@city.ac.uk>
 Imports: ape,
          TreeTools,
-         fpCompare
+         fpCompare,
+         igraph
 Encoding: UTF-8
 License: MIT + file LICENCE
 RoxygenNote: 7.2.3
