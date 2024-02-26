@@ -51,27 +51,27 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
   # branch/es corresponding with smallest branch length/x, then transform
   # all x and branch lengths by - length of previous region 
   # i.e. shifting then to be measured from the started of new region
-  df_list <- list() # List for dataframes
-  abund_list <- list() # Empty dictionary for abundances
+  Length <- length(df_node_info_ed$Branch_length)
+  df_list <- vector(mode = "list", length = Length) # List for dataframes
+  abund_list <- vector(mode = "list", length = Length) # Empty dictionary for abundances
   x <- 0 # Keep track of distance from node
   # Sum over each branch as all could have different branch lengths
   for (j in 1:nrow(df_node_info)) {
     # Only do until reach the end of nodes longest direct descendant branch, l_i
     if (x != l_i){
-      list_ab <- c() # Empty list to hold branch abundances on each iteration
       # Row index of branches where x == branch length
       index_curr_branches <- which(df_node_info_ed[,"x"] %==% df_node_info_ed[,"Branch_length"])
       
       if (nrow(df_node_info_ed) != 0){ # If there are branches left to sum over
         # Store all branch abundances present for this value of x
-        abund_list[[as.character(j)]] <- sapply(as.character(end_node <- df_node_info_ed[index_curr_branches,"End_node"]),
+        abund_list[[j]] <- sapply(as.character(end_node <- df_node_info_ed[index_curr_branches,"End_node"]),
                                                 temp, a = abundances)
         
-        abundance_sum <- sum(abund_list[[as.character(j)]]) # Sum abundances
+        abundance_sum <- sum(abund_list[[j]]) # Sum abundances
         
         # Append dataframe to list
-        df_list <- append(df_list, list(data.frame("S_i" = abundance_sum,
-                                                   "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x))))
+        df_list[j] <- list(data.frame("S_i" = abundance_sum,
+                                      "x" = (min(df_node_info_ed[index_curr_branches,]["x"]) + x)))
         
         prev_x <- min(df_node_info_ed[index_curr_branches,]["x"]) # Update previous x
         x <- x + prev_x # Update x
@@ -85,8 +85,13 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
         df_node_info_ed <- df_node_info_ed[-index_to_be_deleted,]
         
       }
+    }else{
+      break
     }
   }
+  # Delete unused entries
+  df_list <- Filter(Negate(is.null), df_list)
+  abund_list <- Filter(Negate(is.null), abund_list)
   # Combine dataframes
   DF_S_i <- Reduce(rbind, df_list)
   return(list(DF_S_i, abund_list))

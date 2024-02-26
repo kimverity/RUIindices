@@ -38,7 +38,6 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
   df_list <- vector(mode = "list", length = Length) # List for dataframes
   abund_list <- vector(mode = "list", length = Length) # Empty dictionary for abundances
   names(abund_list) <- as.character(c(1:Length)) # Change names to characters
-  df_list <- list()
   # Sum over each unique branch length
   for (j in 1:Length) {
     if (nrow(df_node_info_ed) != 0){ # Checks if any branches are left

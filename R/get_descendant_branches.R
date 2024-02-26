@@ -25,9 +25,9 @@ get_descendant_branches <- function(tree, node){
     # Select row index in tree$edge for all branches that descend from node
     for (i in 1:length(branches)){
       descendants <- append(descendants, 
-                            which(TreeTools::DescendantEdges(edge = branches[i],
-                                                             tree$edge[,1], 
-                                                             tree$edge[,2])))
+                            which(DescendantEdges(edge = branches[i],
+                                                  tree$edge[,1], 
+                                                  tree$edge[,2])))
     }
     sub_tree <- tree$edge[descendants,] # Select subtree from node
     x <- sapply(sub_tree[,2], distance, top_node=node, tree=tree) # Record distance between node and end of each branch

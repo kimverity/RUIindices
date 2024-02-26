@@ -23,7 +23,7 @@
 #' @export
 calculate_DJ_i <- function(tree, node, abundances, index_letter, q, individual){
   
-  ancestors <- getAllAncestors(tree,node) # List of ancestors of node
+  ancestors <- c(TreeTools::ListAncestors(tree$edge[,1], tree$edge[,2], node), node) # List of ancestors of node
   
   S_i_all <- compute_T_i_S_i(tree, node, abundances) # Run function
   T_i <- S_i_all[[1]] # Select value of T_i
