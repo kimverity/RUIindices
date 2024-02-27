@@ -15,20 +15,34 @@
 #'  
 #' @export
 get_descendant_branches <- function(tree, node){
-  
-  branches <- which(tree$edge[,1] == node) # Select row index of direct descendant branches
-  if (length(branches) == 0) { # If node is leaf return empty matrix
-    return(data.frame("Start_node" = numeric(), "End_node" = numeric(),
-                      "Branch_length" = numeric(), "x" = numeric()))}
-  else{
-    descendants <- c() # Empty array to store descendants
-    # Select row index in tree$edge for all branches that descend from node
-    for (i in 1:length(branches)){
-      descendants <- append(descendants, 
-                            which(DescendantEdges(edge = branches[i],
-                                                  tree$edge[,1], 
-                                                  tree$edge[,2])))
+  root <- FALSE
+  if (node == (length(tree$tip.label)+1)){ # Is the root node
+    root <- TRUE
+    branches <- which(tree$edge[,1] == node) # Select row index of direct descendant branches
+    if (length(branches) == 0) { # If node is leaf return empty matrix
+      return(data.frame("Start_node" = numeric(), "End_node" = numeric(),
+                        "Branch_length" = numeric(), "x" = numeric()))}
+    else{
+      descendants <- c() # Empty array to store descendants
+      # Select row index in tree$edge for all branches that descend from node
+      for (i in 1:length(branches)){
+        descendants <- append(descendants, 
+                              which(DescendantEdges(edge = branches[i],
+                                                    tree$edge[,1], 
+                                                    tree$edge[,2])))
+      }
+    }  
+  }else{ # Not root node
+    # Calculate descendant branches from branch connecting node to parent
+    # then delete this branch after
+    branch <- which(tree$edge[,2] == node) # Select row index of direct descendant branches
+    if (length(branch) == 0) { # If node is leaf return empty matrix
+      return(data.frame("Start_node" = numeric(), "End_node" = numeric(),
+                        "Branch_length" = numeric(), "x" = numeric()))}
+    else{
+      descendants <- which(DescendantEdges(tree$edge[,1], tree$edge[,2], edge = branch))
     }
+  }
     sub_tree <- tree$edge[descendants,] # Select subtree from node
     x <- sapply(sub_tree[,2], distance, top_node=node, tree=tree) # Record distance between node and end of each branch
     
@@ -37,7 +51,9 @@ get_descendant_branches <- function(tree, node){
     df_branch_info <- data.frame("Start_node" = sub_tree[,1], "End_node" = sub_tree[,2],
                                  "Branch_length" = tree$edge.length[descendants], 
                                  "x" = x) # Store information
+
+  if (root == FALSE){ # Delete branch
+    df_branch_info <- df_branch_info[-1,]
   }
-  
   return(df_branch_info)
 }
