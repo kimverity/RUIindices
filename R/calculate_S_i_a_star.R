@@ -51,7 +51,7 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
       df_list[j] <- list(data.frame("S_i" = abundance_sum,
                                     "x" = (min(df_node_info_ed$x))))
       # Remove branch/s corresponding to x value
-      df_node_info_ed <- df_node_info_ed[-(which(df_node_info_ed$x == min(df_node_info_ed$x))),]
+      df_node_info_ed <- df_node_info_ed[-(which(df_node_info_ed$x %==% min(df_node_info_ed$x))),]
     }
   }
   # Combine dataframes

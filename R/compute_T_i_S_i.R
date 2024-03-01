@@ -52,7 +52,7 @@ compute_T_i_S_i <- function(tree, node, abundances) {
       T_i <- T_i + (abundance_sum * (min(df_descen_info["Branch_lengths"]) - prev_x)) # Sum T_i
       prev_x <- min(df_descen_info["Branch_lengths"]) # Update previous x
       
-      df_descen_info <- df_descen_info[-(which(df_descen_info["Branch_lengths"] == min(df_descen_info["Branch_lengths"]))),] # Remove branch/s corresponding to x value
+      df_descen_info <- df_descen_info[-(which(df_descen_info["Branch_lengths"] %==% min(df_descen_info["Branch_lengths"]))),] # Remove branch/s corresponding to x value
     }
   }
   # Combine dataframes
