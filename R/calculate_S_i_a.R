@@ -56,7 +56,7 @@ calculate_S_i_a <- function(tree, node, abundances, curr_ancestor, h, l_i) {
   abund_list <- vector(mode = "list", length = Length) # Empty dictionary for abundances
   x <- 0 # Keep track of distance from node
   # Sum over each branch as all could have different branch lengths
-  for (j in 1:nrow(df_node_info)) {
+  for (j in 1:nrow(Length)) {
     # Only do until reach the end of nodes longest direct descendant branch, l_i
     if (x != l_i){
       # Row index of branches where x == branch length
