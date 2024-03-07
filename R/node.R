@@ -42,7 +42,7 @@ node <- function(file, node_abundances = FALSE, index_letter = "D", q = 1,
     abundances <- abundance_phylo(tree, node_abundances) # Calculate branch/node abundances
   }else if (!(is.data.frame(node_abundances))){ # Tree doesn't have abundance data
     num_tips <- tree$edge[1,1] - 1 # Number of tips
-    tree$node.label<- as.character(c(1:num_tips)) # Assign node labels
+    tree$tip.label<- as.character(c(1:num_tips)) # Assign node labels
     num_nodes <- tree$Nnode # Number of nodes
     # Assign tip labels
     tree$node.label<- as.character(c((num_tips+1):(num_tips + num_nodes)))
