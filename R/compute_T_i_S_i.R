@@ -21,8 +21,6 @@ compute_T_i_S_i <- function(tree, node, abundances) {
   df_descen_info <- data.frame("Start_node" = tree$edge[tree$edge[, 1] == node, 1],
                                "End_node" = tree$edge[tree$edge[, 1] == node, 2],
                                "Branch_lengths" = tree$edge.length[which(tree$edge[, 1] == node)])
-  # x is distance from root node to end of interval
-  DF_S_i <- data.frame("S_i" = numeric(), "x" = numeric()) # Empty dataframe
   
   # Sum abundances of all branches in df_descen_info, delete the branch/es 
   # corresponding with shortest branch length, repeat until all branches
@@ -32,7 +30,7 @@ compute_T_i_S_i <- function(tree, node, abundances) {
   T_i <- 0 # Initialise T_i sum
   prev_x <- 0 # Keep track of previous value of x
   # Sum over each unique branch length
-  for (j in 1:length(unique(df_descen_info[,"Branch_lengths"]))) {
+  for (j in 1:Length) {
     abundance_sum <- 0 # Initialise sum
     if (nrow(df_descen_info) != 0){ # Checks if any branches are left
       for (i in 1:nrow(df_descen_info)) { # Sum over all branches in current region
