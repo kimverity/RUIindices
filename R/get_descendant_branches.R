@@ -35,8 +35,8 @@ get_descendant_branches <- function(tree, node){
   }else{ # Not root node
     # Calculate descendant branches from branch connecting node to parent
     # then delete this branch after
-    branch <- which(tree$edge[,2] == node) # Select row index of direct descendant branches
-    if (length(branch) == 0) { # If node is leaf return empty matrix
+    branch <- which(tree$edge[,2] == node) # Select row index of parent branch
+    if (length(which(node == c(1:length(tree$tip.label))))) { # If node is leaf return empty matrix
       return(data.frame("Start_node" = numeric(), "End_node" = numeric(),
                         "Branch_length" = numeric(), "x" = numeric()))}
     else{
@@ -52,7 +52,7 @@ get_descendant_branches <- function(tree, node){
                                  "Branch_length" = tree$edge.length[descendants], 
                                  "x" = x) # Store information
 
-  if (root == FALSE){ # Delete branch
+  if (root == FALSE){ # Delete parent branch
     df_branch_info <- df_branch_info[-1,]
   }
   return(df_branch_info)
