@@ -33,8 +33,20 @@ node <- function(file, node_abundances = FALSE, index_letter = "D", q = 1,
   
   tree <- read_convert(file) # Capitalise inputs
   index_letter <- toupper(index_letter) # Capitalise inputs
-  
-  # Checks if tree has abundance data
+
+  # Checks if the tree is linear
+  # If tree is linear all node indices are 1
+  if (length(tree$edge[,1]) == 1){
+    if (individual == TRUE){
+      index <- 1
+      return(index)
+    }else{
+      
+      List <- list("D1N"= 1,"J1N" = 1,"D0N" = 1)
+      return(List)
+    }
+  }else{
+      # Checks if tree has abundance data
   # If it does it calculates branch/node abundance data.
   # If it doesn't, it assign leaves to be equally abundant and internal nodes 
   # to have size zero
@@ -86,5 +98,6 @@ node <- function(file, node_abundances = FALSE, index_letter = "D", q = 1,
     }
     
     return(index)
+  }
   }
 }

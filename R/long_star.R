@@ -37,6 +37,36 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   mean_type <- toupper(mean_type) # Capitalise input
   
   tree <- read_convert(file) # Convert tree to phylo object
+
+  # Check if tree is linear
+  if ((length(tree$edge[,1]) == 1)&(mean_type == "LONGITUDINAL")){
+    # If tree is linear all longitudinal indices are 1
+    if (individual == TRUE){
+      index <- 1
+      return(index)
+    }else{
+      List <- list("D0L"= 1,"D1L" = 1,"J1L" = 1)
+      return(List)
+    }
+  }else{
+    # If tree is linear but star mean is desired
+    # Need to form tree properly
+    if ((length(tree$edge[,1]) == 1)&(mean_type == "STAR")){
+      tree <- form_linear_phylo(file)
+      # If no abundances given, it will be assumed leaf has size one
+      # and index values are trivial
+      if (!is.data.frame(node_abundances)){
+        if (individual == TRUE){
+          index <- 1
+          return(index)
+        }else{
+          List <- list("D0S"= tree$Nnode,"D1S" = tree$Nnode,"J1S" = 1)
+          return(List)
+        }
+      }
+    }
+  }
+
   node <- tree$edge[1,1] # Select root node
   
   # Checks if tree has abundance data
