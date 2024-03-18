@@ -52,7 +52,10 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
     # If tree is linear but star mean is desired
     # Need to form tree properly
     if ((length(tree$edge[,1]) == 1)&(mean_type == "STAR")){
-      tree <- form_linear_phylo(file)
+      if (inherits(file, "phylo") == FALSE){ # Check if phylo object given
+      # If phylo object not given, form tree proprly
+        tree <- form_linear_phylo(file)
+      }
       # If no abundances given, it will be assumed leaf has size one
       # and index values are trivial
       if (!is.data.frame(node_abundances)){
