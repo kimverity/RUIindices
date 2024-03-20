@@ -35,9 +35,9 @@ form_linear_phylo <- function(file){
   if (length(colon) == 1) { # Tree has colons/branch lengths
     # Length of string
     str_len <- unlist(gregexpr(";", tree))
-    # Check if whole tree has brackets around it i.e.
-    # ends in ');'
-    if (substring(tree, str_len - 1, str_len - 1) == ")") { # Extra brackets 
+    # Check if there is a root node label
+    # if no label assign empty one
+    if (substring(tree, str_len - 1, str_len - 1) == ")") { # no root node label
       # Check if branch lengths are empty
       if (unlist(gregexpr(":)", tree)) == -1) { # Branch lengths not empty 
         # indices of right-hand brackets
@@ -52,7 +52,9 @@ form_linear_phylo <- function(file){
         # select node labels
         node_labels <- mapply(substring, ind - 2, ind - 2,  text = tree)
       }
-    }else { # No extra brackets
+      # Add root node, has no label so assign empty label
+      node_labels <- append(node_labels, "")
+    }else { # Root node label
       # Check if branch lengths are empty
       if (unlist(gregexpr(":)", tree)) == -1) { # Branch lengths not empty 
         # indices of right-hand brackets
@@ -76,11 +78,13 @@ form_linear_phylo <- function(file){
     ind <- unlist(gregexpr("\\)", tree))
     # select node labels
     node_labels <- mapply(substring, ind - 1, ind - 1,  text = tree)
-    # Check if whole tree has brackets around it i.e.
-    # ends in ');'
-    if (substring(tree, str_len - 1, str_len - 1) != ")"){ # Add root node
+    # Check if there is a root node label
+    # if not assign and empty label
+    if (substring(tree, str_len - 1, str_len - 1) != ")"){ # Root node has label
       node_labels <- append(node_labels, substring(tree, ind[length(ind)] + 1,
                                                    ind[length(ind)] + 1))
+    }else{ # No label, assign empty one
+      node_labels <- append(node_labels, "")
     }
   }
   
