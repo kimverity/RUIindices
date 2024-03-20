@@ -27,7 +27,7 @@ get_descendant_branches <- function(tree, node){
       # Select row index in tree$edge for all branches that descend from node
       for (i in 1:length(branches)){
         descendants <- append(descendants, 
-                              which(DescendantEdges(edge = branches[i],
+                              which(descendant_edges(edge = branches[i],
                                                     tree$edge[,1], 
                                                     tree$edge[,2])))
       }
@@ -40,7 +40,7 @@ get_descendant_branches <- function(tree, node){
       return(data.frame("Start_node" = numeric(), "End_node" = numeric(),
                         "Branch_length" = numeric(), "x" = numeric()))}
     else{
-      descendants <- which(DescendantEdges(tree$edge[,1], tree$edge[,2], edge = branch))
+      descendants <- which(descendant_edges(tree$edge[,1], tree$edge[,2], edge = branch))
     }
   }
     sub_tree <- tree$edge[descendants,] # Select subtree from node

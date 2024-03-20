@@ -12,10 +12,10 @@
 #' edge in turn is the specified edge or one of its descendants.
 #' @examples
 #' tree <- ape::read.tree(text='(a:1,(b:0.5,c:0.5)e:0.5)d:0;')
-#' desc <- DescendantEdges(tree$edge[, 1], tree$edge[, 2], edge = 1)
+#' desc <- descendant_edges(tree$edge[, 1], tree$edge[, 2], edge = 1)
 #' @family tree navigation
 #' @export
-DescendantEdges <- function(parent, child, edge,
+descendant_edges <- function(parent, child, edge,
                             nEdge = length(parent)) {
 
   ret <- logical(nEdge)
