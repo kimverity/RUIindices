@@ -58,7 +58,9 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
       }
       # If no abundances given, it will be assumed leaf has size one
       # and index values are trivial
-      if (!is.data.frame(node_abundances)){
+      # Also if tree is only root node and leaf,
+      # abundances do not matter and index values are again trivial
+      if ((!is.data.frame(node_abundances))|(length(tree$edge[,1]) == 1)){
         if (individual == TRUE){
           index <- 1
           return(index)
