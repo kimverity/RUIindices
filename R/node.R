@@ -36,7 +36,7 @@ node <- function(file, node_abundances = FALSE, index_letter = "D", q = 1,
 
   # Checks if the tree is linear
   # If tree is linear all node indices are 1
-  if (length(tree$edge[,1]) == 1){
+  if (length(tree$tip.label) == 1){
     if (individual == TRUE){
       index <- 1
       return(index)

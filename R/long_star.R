@@ -39,7 +39,7 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   tree <- read_convert(file) # Convert tree to phylo object
 
   # Check if tree is linear
-  if ((length(tree$edge[,1]) == 1)&(mean_type == "LONGITUDINAL")){
+  if ((length(tree$tip.label) == 1)&(mean_type == "LONGITUDINAL")){
     # If tree is linear all longitudinal indices are 1
     if (individual == TRUE){
       index <- 1
@@ -51,7 +51,7 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   }else{
     # If tree is linear but star mean is desired
     # Need to form tree properly
-    if ((length(tree$edge[,1]) == 1)&(mean_type == "STAR")){
+    if ((length(tree$tip.label) == 1)&(mean_type == "STAR")){
       if (inherits(file, "phylo") == FALSE){ # Check if phylo object given
       # If phylo object not given, form tree proprly
         tree <- form_linear_phylo(file)
