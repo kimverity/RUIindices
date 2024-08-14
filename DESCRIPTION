@@ -11,4 +11,4 @@ Imports: ape,
          igraph
 Encoding: UTF-8
 License: MIT + file LICENCE
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
