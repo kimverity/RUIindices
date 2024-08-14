@@ -29,23 +29,30 @@ calculate_DJ_i <- function(tree, node, abundances, index_letter, q, individual){
   T_i <- S_i_all[[1]] # Select value of T_i
   S_i <- S_i_all[[2]] # Select S_i dataframe
   
-  # Calculate integral value/s
-  DJ_i <- sapply(ancestors, calculate_integral, tree=tree, node=node, S_i=S_i,
-                 abundances=abundances, index_letter = index_letter, q = q,
-                 individual=individual)
-  
-  # Add all ancestor contributions and normalise
-  if (individual == FALSE){
-    dj_i <- apply(DJ_i,1,sum)
-    D1_i <- (1/T_i) * dj_i[1]
-    J1_i <- (1/T_i) *dj_i[2]
-    D0_i <- (1/T_i) *dj_i[3]
-    v <- c(D1_i, J1_i, D0_i) 
-  }else if (individual == TRUE){
-    dj_i <- sum(DJ_i)
-    v <- (1/T_i) * dj_i
+  if (T_i != 0){ # Has descendant branch with branch length greater than zero
+    # Calculate integral value/s
+    DJ_i <- sapply(ancestors, calculate_integral, tree=tree, node=node, S_i=S_i,
+                  abundances=abundances, index_letter = index_letter, q = q,
+                  individual=individual)
+    
+    # Add all ancestor contributions and normalise
+    if (individual == FALSE){
+      dj_i <- apply(DJ_i,1,sum)
+      D1_i <- (1/T_i) * dj_i[1]
+      J1_i <- (1/T_i) *dj_i[2]
+      D0_i <- (1/T_i) *dj_i[3]
+      v <- c(D1_i, J1_i, D0_i) 
+    }else if (individual == TRUE){
+      dj_i <- sum(DJ_i)
+      v <- (1/T_i) * dj_i
+    }
+  }else{
+    if (individual == FALSE){
+      v <- c(0, 0, 0) 
+    }else if (individual == TRUE){
+      v <- 0
+    }
   }
-  
   
   return(v)
 }
