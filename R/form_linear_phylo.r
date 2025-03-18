@@ -32,60 +32,45 @@ form_linear_phylo <- function(file){
   # Checks for all common tree forms and their variations
   # e.g. whether tree has branch lengths, brackets around
   # root node 
-  if (length(colon) == 1) { # Tree has colons/branch lengths
-    # Length of string
-    str_len <- unlist(gregexpr(";", tree))
-    # Check if there is a root node label
-    # if no label assign empty one
-    if (substring(tree, str_len - 1, str_len - 1) == ")") { # no root node label
-      # Check if branch lengths are empty
-      if (unlist(gregexpr(":)", tree)) == -1) { # Branch lengths not empty 
-        # indices of right-hand brackets
-        ind <- unlist(gregexpr("\\)", tree))
-        # select node labels
-        node_labels <- mapply(substring, ind - 3, ind - 3,  text = tree)
-        # select branch lengths
-        branch_lengths <- as.numeric(mapply(substring, ind - 1, ind - 1,  text = tree))
-      }else { #  Empty
-        # indices of right-hand brackets
-        ind <- unlist(gregexpr("\\)", tree))
-        # select node labels
-        node_labels <- mapply(substring, ind - 2, ind - 2,  text = tree)
-      }
-      # Add root node, has no label so assign empty label
-      node_labels <- append(node_labels, "")
-    }else { # Root node label
-      # Check if branch lengths are empty
-      if (unlist(gregexpr(":)", tree)) == -1) { # Branch lengths not empty 
-        # indices of right-hand brackets
-        ind <- unlist(gregexpr("\\)", tree))
-        # select node labels
-        node_labels <- mapply(substring, ind - 3, ind - 3,  text = tree)
-        # select branch lengths
-        branch_lengths <- as.numeric(mapply(substring, ind - 1, ind - 1,  text = tree))
-      }else { #  Empty
-        ind <- unlist(gregexpr("\\)", tree))
-        node_labels <- mapply(substring, ind - 2, ind - 2,  text = tree)
-      }
-      # Add root node
-      node_labels <- append(node_labels, substring(tree, ind[length(ind)] + 1,
-                                                   ind[length(ind)] + 1))
-    }
-  }else { # No branch lengths
-    # Length of string
-    str_len <- unlist(gregexpr(";", tree))
+   if (length(colon) == 1) { # Tree has colons/branch lengths
     # indices of right-hand brackets
-    ind <- unlist(gregexpr("\\)", tree))
+    ind_r_brack <- unlist(gregexpr("\\)", tree))
+    # indices of left-hand brackets
+    ind_l_brack <- unlist(gregexpr("\\(",tree))
+    ind_col <- unlist(gregexpr(":",tree))
     # select node labels
-    node_labels <- mapply(substring, ind - 1, ind - 1,  text = tree)
-    # Check if there is a root node label
-    # if not assign and empty label
-    if (substring(tree, str_len - 1, str_len - 1) != ")"){ # Root node has label
-      node_labels <- append(node_labels, substring(tree, ind[length(ind)] + 1,
-                                                   ind[length(ind)] + 1))
-    }else{ # No label, assign empty one
-      node_labels <- append(node_labels, "")
+    node_labels <- mapply(substring, c(ind_l_brack[length(ind_l_brack)] + 1,
+                                       ind_r_brack[-length(ind_r_brack)] + 1),
+                          ind_col - 1,  text = tree)
+    # Check if branch lengths are empty
+    if (unlist(gregexpr(":)", tree))[1] == -1) { # Branch lengths not empty 
+      # select branch lengths
+      branch_lengths <- as.numeric(mapply(substring, ind_col + 1,
+                                          ind_r_brack - 1,  text = tree))
     }
+    
+  }else { # No branch lengths or colons
+    # indices of right-hand brackets
+    ind_r_brack <- unlist(gregexpr("\\)", tree))
+    # indices of left-hand brackets
+    ind_l_brack <- unlist(gregexpr("\\(",tree))
+    # select node labels
+    node_labels <- mapply(substring, c(ind_l_brack[length(ind_l_brack)] + 1,
+                                       ind_r_brack[-length(ind_r_brack)] + 1),
+                          ind_r_brack - 1,  text = tree)
+  }
+  
+  # Length of string
+  str_len <- unlist(gregexpr(";", tree))
+  # Check if there is a root node label
+  # if no label assign empty one
+  if (substring(tree, str_len - 1, str_len - 1) == ")") { # No root node label
+    node_labels <- append(node_labels, "")
+  }else { # Root node label
+    # Add root node
+    node_labels <- append(node_labels, substring(tree,
+                                                 ind_r_brack[length(ind_r_brack)] + 1,
+                                                 ind_r_brack[length(ind_r_brack)] + 1))
   }
   
   no_nodes <- length(node_labels) - 1 # Don't count leaf
