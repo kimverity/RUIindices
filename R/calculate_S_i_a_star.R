@@ -54,6 +54,7 @@ calculate_S_i_a_star <- function(tree, node, abundance_data) {
       df_node_info_ed <- df_node_info_ed[-(which(df_node_info_ed$x %==% min(df_node_info_ed$x))),]
     }
   }
+  abund_list <- Filter(Negate(is.null), abund_list)
   # Combine dataframes
   DF_S_i <- Reduce(rbind, df_list)
   return(list(DF_S_i, abund_list))
