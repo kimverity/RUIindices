@@ -20,6 +20,8 @@
 #' J only q=1 will be returned, if calculating all indices input does not matter
 #' @param individual A boolean; either TRUE if only one index is desired or
 #' FALSE if all indices are desired
+#' @param normalised A boolean; either TRUE if the normalised indices are desired or
+#' FALSE if the non-normalised indices are
 #' @returns Either; single number for the chosen index or a dictionary with each
 #' index value (for the key, if index is 1DS key is D1S)
 #' 
@@ -31,42 +33,77 @@
 #' 
 #' @export
 long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "D", q = 1,
-                      individual = FALSE){
+                      individual = FALSE, normalised = TRUE){
   
   index_letter <- toupper(index_letter) # Capitalise input
   mean_type <- toupper(mean_type) # Capitalise input
-  
   tree <- read_convert(file) # Convert tree to phylo object
 
-  # Check if tree is linear
-  if ((length(tree$tip.label) == 1)&(mean_type == "LONGITUDINAL")){
-    # If tree is linear all longitudinal indices are 1
-    if (individual == TRUE){
-      index <- 1
-      return(index)
-    }else{
-      List <- list("D0L"= 1,"D1L" = 1,"J1L" = 1)
-      return(List)
-    }
-  }else{
-    # If tree is linear but star mean is desired
-    # Need to form tree properly
-    if ((length(tree$tip.label) == 1)&(mean_type == "STAR")){
-      if (inherits(file, "phylo") == FALSE){ # Check if phylo object given
-      # If phylo object not given, form tree proprly
-        tree <- form_linear_phylo(file)
+  if (normalised == TRUE){ # normalsied indices
+    # Check if tree is linear
+    if ((length(tree$tip.label) == 1)&(mean_type == "LONGITUDINAL")){
+      # If tree is linear all longitudinal indices are 1
+      if (individual == TRUE){
+        index <- 1
+        return(index)
+      }else{
+        List <- list("D0L"= 1,"D1L" = 1,"J1L" = 1)
+        return(List)
       }
-      # If no abundances given, it will be assumed leaf has size one
-      # and index values are trivial
-      # Also if tree is only root node and leaf,
-      # abundances do not matter and index values are again trivial
-      if ((!is.data.frame(node_abundances))|(length(tree$tip.label) == 1)){
-        if (individual == TRUE){
-          index <- 1
-          return(index)
-        }else{
-          List <- list("D0S"= tree$Nnode,"D1S" = tree$Nnode,"J1S" = 1)
-          return(List)
+    }else{
+      # If tree is linear but star mean is desired
+      # Need to form tree properly
+      if ((length(tree$tip.label) == 1)&(mean_type == "STAR")){
+        if (inherits(file, "phylo") == FALSE){ # Check if phylo object given
+        # If phylo object not given, form tree proprly
+          tree <- form_linear_phylo(file)
+        }
+        # Only trivial case for star mean for linear tree is
+        # case of one internal node and one leaf
+        if ((tree$Nnode == 1)&(length(tree$tip.label) == 1)){
+          if (individual == TRUE){
+            index <- 1
+            return(index)
+          }else{
+            List <- list("D0S"= 1,"D1S" = 1,"J1S" = 1)
+            return(List)
+          }
+        }
+      }
+    }
+  }else{ # non-normalised indices
+    # Check if tree is linear
+    if ((length(tree$tip.label) == 1)&(mean_type == "LONGITUDINAL")){
+      # If tree is linear all longitudinal indices are 1
+      if (individual == TRUE){
+        index <- 1
+        return(index)
+      }else{
+        List <- list("D0L"= 0,"D1L" = 0,"J1L" = 0)
+        return(List)
+      }
+    }else{
+      # If tree is linear but star mean is desired
+      # Need to form tree properly
+      if ((length(tree$tip.label) == 1)&(mean_type == "STAR")){
+        if (inherits(file, "phylo") == FALSE){ # Check if phylo object given
+        # If phylo object not given, form tree proprly
+          tree <- form_linear_phylo(file)
+        }
+        # Only trivial case for star mean for linear tree is
+        # case of one internal node and one leaf
+        if ((tree$Nnode == 1)&(length(tree$tip.label) == 1)){
+          if (individual == TRUE){
+            if (index_letter == "J"){
+              index <- 1
+            }else{
+              index <- 0
+            }
+            return(index)
+          }else{
+            List <- list("D0S"= 0,"D1S" = 0,"J1S" = 1)
+            return(List)
+          }
         }
       }
     }

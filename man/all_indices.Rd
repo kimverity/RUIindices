@@ -4,7 +4,7 @@
 \alias{all_indices}
 \title{Calculates all index values}
 \usage{
-all_indices(file, node_abundances = FALSE)
+all_indices(file, node_abundances = FALSE, normalised = TRUE)
 }
 \arguments{
 \item{file}{A string or phylo object; String of file name containing tree or 
@@ -15,6 +15,9 @@ the first column must contain the node labels and second column the correspondin
 node abundance data; if no abundance data is known, don't provide an input and
 code will assign leaves to be equally abundant and internal nodes to have size
 zero}
+
+\item{normalised}{A boolean; either TRUE if the normalised indices are desired or
+FALSE if the non-normalised indices are}
 }
 \value{
 A dictionary containing all index values (for the key, 

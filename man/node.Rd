@@ -9,7 +9,8 @@ node(
   node_abundances = FALSE,
   index_letter = "D",
   q = 1,
-  individual = FALSE
+  individual = FALSE,
+  normalised = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ J only q=1 will be returned, if calculating all indices input does not matter}
 
 \item{individual}{A boolean; either TRUE if only one index is desired or
 FALSE if all indices are desired}
+
+\item{normalised}{A boolean; either TRUE if the normalised indices are desired or
+FALSE if the non-normalised indices are}
 }
 \value{
 Either; single number for the chosen index or a dictionary with each

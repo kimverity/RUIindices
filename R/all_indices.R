@@ -7,6 +7,8 @@
 #' node abundance data; if no abundance data is known, don't provide an input and
 #' code will assign leaves to be equally abundant and internal nodes to have size
 #' zero
+#' @param normalised A boolean; either TRUE if the normalised indices are desired or
+#' FALSE if the non-normalised indices are
 #' @returns A dictionary containing all index values (for the key, 
 #' if index is 1DS key is D1S)
 #' 
@@ -17,11 +19,18 @@
 #' all_indices(tree, tree_abundance)
 #' 
 #' @export
-all_indices <- function(file, node_abundances = FALSE){
+all_indices <- function(file, node_abundances = FALSE,
+                        normalised = TRUE){
   # Calculates all indices
-  node <- node(file, node_abundances, "D", 1, FALSE)
-  star <- long_star(file, node_abundances, "Star", "D", 0, FALSE)
-  long <- long_star(file, node_abundances, "Longitudinal", "D", 0, FALSE)
+  if (normalised == TRUE){ # normalised indices
+    node <- node(file, node_abundances, "D", 1, FALSE)
+    star <- long_star(file, node_abundances, "Star", "D", 0, FALSE)
+    long <- long_star(file, node_abundances, "Longitudinal", "D", 0, FALSE)
+  }else{ # non-normalised indices
+    node <- node(file, node_abundances, "D", 1, FALSE, FALSE)
+    star <- long_star(file, node_abundances, "Star", "D", 0, FALSE, FALSE)
+    long <- long_star(file, node_abundances, "Longitudinal", "D", 0, FALSE, FALSE)
+  }
   
   # List of each index value
   values <- list("D0N"= node$D0N,"D1N" = node$D1N,"J1N" = node$J1N, "D0S" = star$D0S,
