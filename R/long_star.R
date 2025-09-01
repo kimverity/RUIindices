@@ -184,24 +184,44 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   # Calculate normalisation term
   T_S_sum <- sum(df_S_i_a$S_i * X)
 
-  # Normalise index/indices
-  if (individual == TRUE) { # Single index
-    if (index_letter == "J") { # J
-      H <- (sum(values) / T_S_sum)
-    }else { # D
-      H <- exp((sum(values) / T_S_sum))
+  if (normalised == TRUE){ # normalsied indices
+    # Normalise index/indices
+    if (individual == TRUE) { # Single index
+      if (index_letter == "J") { # J
+        H <- (sum(values) / T_S_sum)
+      }else { # D
+        H <- exp((sum(values) / T_S_sum))
+      }
+    }else if (individual == FALSE) { # All indices
+      if (mean_type == "STAR") { # Star mean
+        H <- list("D0S" = exp((sum(values[1,]) / T_S_sum)),
+                  "D1S" = exp((sum(values[2,]) / T_S_sum)),
+                  "J1S" = sum(values[3, ]) / T_S_sum)
+      }else if(mean_type == "LONGITUDINAL") { # Longitudinal mean
+        H <- list("D0L" = exp((sum(values[1,]) / T_S_sum)),
+                  "D1L" = exp((sum(values[2,]) / T_S_sum)),
+                  "J1L" = sum(values[3,]) / T_S_sum)
+      }
     }
-  }else if (individual == FALSE) { # All indices
-    if (mean_type == "STAR") { # Star mean
-      H <- list("D0S" = exp((sum(values[1,]) / T_S_sum)),
-                "D1S" = exp((sum(values[2,]) / T_S_sum)),
-                "J1S" = sum(values[3, ]) / T_S_sum)
-    }else if(mean_type == "LONGITUDINAL") { # Longitudinal mean
-      H <- list("D0L" = exp((sum(values[1,]) / T_S_sum)),
-                "D1L" = exp((sum(values[2,]) / T_S_sum)),
-                "J1L" = sum(values[3,]) / T_S_sum)
+  }else{ # non-normalsied indices
+    # Normalise index/indices
+    if (individual == TRUE) { # Single index
+      if (index_letter == "J") { # J
+        H <- (sum(values) / T_S_sum)
+      }else { # D
+        H <- sum(values)
+      }
+    }else if (individual == FALSE) { # All indices
+      if (mean_type == "STAR") { # Star mean
+        H <- list("D0S" = sum(values[1,]),
+                  "D1S" = sum(values[2,]),
+                  "J1S" = sum(values[3, ]) / T_S_sum)
+      }else if(mean_type == "LONGITUDINAL") { # Longitudinal mean
+        H <- list("D0L" = sum(values[1,]),
+                  "D1L" = sum(values[2,]),
+                  "J1L" = sum(values[3,]) / T_S_sum)
+      }
     }
   }
-
   return(H)
 }
