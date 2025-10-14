@@ -116,7 +116,13 @@ long_star <- function(file, node_abundances = FALSE, mean_type, index_letter = "
   # If it doesn't, it assign leaves to be equally abundant and internal nodes 
   # to have size zero
   if (is.data.frame(node_abundances)) { # Tree has abundance data
-    abundances <- abundance_phylo(tree, node_abundances) # Calculate branch/node abundances
+      # turn data into proportions i.e. so it sums to 1
+      root_node_lab <- tree$node.label[1]
+      node_abundances[-which(node_abundances[,1] == root_node_lab),2] <- 
+        node_abundances[-which(node_abundances[,1] == root_node_lab),2] / 
+        sum(node_abundances[-which(node_abundances[,1] == root_node_lab),2])
+
+      abundances <- abundance_phylo(tree, node_abundances) # Calculate branch/node abundances
   }else if (!(is.data.frame(node_abundances))) { # Tree doesn't have abundance data
     num_tips <- tree$edge[1,1] - 1 # Number of tips
     tree$tip.label<- as.character(c(1:num_tips)) # Assign node labels

@@ -53,6 +53,12 @@ node <- function(file, node_abundances = FALSE, index_letter = "D", q = 1,
     # If it doesn't, it assign leaves to be equally abundant and internal nodes 
     # to have size zero
     if (is.data.frame(node_abundances)){ # Tree has abundance data
+      # turn data into proportions i.e. so it sums to 1
+      root_node_lab <- tree$node.label[1]
+      node_abundances[-which(node_abundances[,1] == root_node_lab),2] <- 
+        node_abundances[-which(node_abundances[,1] == root_node_lab),2] / 
+        sum(node_abundances[-which(node_abundances[,1] == root_node_lab),2])
+
       abundances <- abundance_phylo(tree, node_abundances) # Calculate branch/node abundances
     }else if (!(is.data.frame(node_abundances))){ # Tree doesn't have abundance data
       num_tips <- tree$edge[1,1] - 1 # Number of tips
