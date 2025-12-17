@@ -10,5 +10,5 @@ Imports: ape,
          fpCompare,
          igraph
 Encoding: UTF-8
-License: MIT + file LICENCE
+License: GPL-3 + file LICENCE
 RoxygenNote: 7.3.2
