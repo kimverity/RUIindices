@@ -15,6 +15,13 @@
 #' desc <- descendant_edges(tree$edge[, 1], tree$edge[, 2], edge = 1)
 #' @family tree navigation
 #' @export
+# ------------------------------------------------------------------------------
+# Code derived from the TreeTools R package
+# Copyright (c) Martin R. Smith
+# Modifications Copyright (c) <Kimberley Verity>, <2023>
+# Licensed under the GNU General Public License v3 (GPL-3)
+# ------------------------------------------------------------------------------
+
 descendant_edges <- function(parent, child, edge,
                             nEdge = length(parent)) {
 
